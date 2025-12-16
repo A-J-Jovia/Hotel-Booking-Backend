@@ -12,6 +12,8 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+// ================== CORS CONFIG ==================
 const allowedOrigins = [
   "http://localhost:5173",
   "https://hotel-booking-nine-tawny.vercel.app",
@@ -20,10 +22,10 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like Postman)
+      // Allow requests with no origin (Postman, server-to-server)
       if (!origin) return callback(null, true);
 
-      // allow all Vercel preview deployments
+      // Allow ALL Vercel deployments (preview + prod)
       if (origin.endsWith(".vercel.app")) {
         return callback(null, true);
       }
@@ -38,17 +40,23 @@ app.use(
   })
 );
 
-
+// ================== MIDDLEWARE ==================
 app.use(express.json());
 
-// ROUTES
+// ================== ROUTES ==================
 app.use("/api/auth", authRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/reviews", reviewRoutes);
 
-app.get("/", (req, res) => res.send("Hotel Booking API Running"));
+// ================== HEALTH CHECK ==================
+app.get("/", (req, res) => {
+  res.send("Hotel Booking API Running");
+});
 
-app.listen(process.env.PORT, () =>
-  console.log(`🚀 Server running on port ${process.env.PORT}`)
-);
+// ================== START SERVER ==================
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
