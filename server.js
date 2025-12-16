@@ -12,12 +12,11 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: "https://hotel-booking-nine-tawny.vercel.app",
+  credentials: true,
+}));
+
 app.use(express.json());
 
 // ROUTES
