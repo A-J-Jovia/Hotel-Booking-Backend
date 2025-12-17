@@ -21,24 +21,17 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (Postman, server-to-server)
-      if (!origin) return callback(null, true);
-
-      // Allow ALL Vercel deployments (preview + prod)
-      if (origin.endsWith(".vercel.app")) {
-        return callback(null, true);
-      }
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
+    origin: [
+      "http://joviabucket123.s3-website-ap-southeast-2.amazonaws.com",
+      "https://joviabucket123.s3-website-ap-southeast-2.amazonaws.com"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
   })
 );
+
+app.options("*", cors());
 
 // ================== MIDDLEWARE ==================
 app.use(express.json());
