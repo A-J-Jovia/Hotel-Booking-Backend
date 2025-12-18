@@ -13,25 +13,35 @@ connectDB();
 
 const app = express();
 
-// ================== CORS CONFIG ==================
+// ================== CORS CONFIG (RENDER + VERCEL SAFE) ==================
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://hotel-booking-nine-tawny.vercel.app",
+  "http://localhost:3000",
+  "https://hotel-booking-nine-tawny.vercel.app"
 ];
 
 app.use(
   cors({
-    origin: [
-      "http://joviabucket123.s3-website-ap-southeast-2.amazonaws.com",
-      "https://joviabucket123.s3-website-ap-southeast-2.amazonaws.com"
-    ],
+    origin: function (origin, callback) {
+      // Allow server-to-server & Postman
+      if (!origin) return callback(null, true);
+
+      // Allow ALL Vercel deployments
+      if (origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("❌ CORS not allowed"));
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
   })
 );
-
-app.options("*", cors());
 
 // ================== MIDDLEWARE ==================
 app.use(express.json());
@@ -44,7 +54,7 @@ app.use("/api/reviews", reviewRoutes);
 
 // ================== HEALTH CHECK ==================
 app.get("/", (req, res) => {
-  res.send("Hotel Booking API Running");
+  res.send("✅ Hotel Booking API Running on Render");
 });
 
 // ================== START SERVER ==================
