@@ -98,24 +98,22 @@ export const getUserBookings = async (req, res) => {
     try {
         const bookings = await Booking.find({ userId: req.user.id })
             .populate("hotelId")
-            .sort({ checkin: -1 }); 
+            .sort({ checkin: -1 });
 
         const formatted = bookings.map((b) => ({
             _id: b._id,
-            // Use dayjs format for consistent output, matching input format
-            checkin: dayjs(b.checkin).format("YYYY-MM-DD"), 
+            checkin: dayjs(b.checkin).format("YYYY-MM-DD"),
             checkout: dayjs(b.checkout).format("YYYY-MM-DD"),
             guests: b.guests,
             totalPrice: b.totalPrice,
             createdAt: b.createdAt,
-            hotel: b.hotelId, 
-            nights: dayjs(b.checkout).diff(dayjs(b.checkin), 'day')
+            hotel: b.hotelId,
+            nights: dayjs(b.checkout).diff(dayjs(b.checkin), "day"),
         }));
 
-        res.status(200).json({
-            ok: true,
-            bookings: formatted,
-        });
+        // ✅ RETURN ARRAY DIRECTLY
+        res.status(200).json(formatted);
+
     } catch (error) {
         console.error("Fetch bookings error:", error);
         res.status(500).json({ message: error.message });
