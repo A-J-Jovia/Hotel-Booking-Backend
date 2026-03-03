@@ -15,22 +15,29 @@ const app = express();
 
 // ================== CORS CONFIG ==================
 const allowedOrigins = [
+  "http://joviabucket123.s3-website-ap-southeast-2.amazonaws.com",
   "http://localhost:5173",
-  "https://hotel-booking-nine-tawny.vercel.app",
 ];
 
 app.use(
   cors({
-    origin: [
-      "http://joviabucket123.s3-website-ap-southeast-2.amazonaws.com",
-      "https://joviabucket123.s3-website-ap-southeast-2.amazonaws.com"
-    ],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (Postman, curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
   })
 );
 
+// VERY IMPORTANT: allow preflight
 app.options("*", cors());
 
 // ================== MIDDLEWARE ==================
